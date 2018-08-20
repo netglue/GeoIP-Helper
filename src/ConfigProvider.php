@@ -51,6 +51,8 @@ class ConfigProvider
         return [
             'factories' => [
                 Reader::class => Container\DatabaseReaderFactory::class,
+                Middleware\Geolocation::class => Container\Middleware\GeolocationFactory::class,
+                Service\GeoIPService::class => Container\Service\GeoIPServiceFactory::class,
             ],
         ];
     }

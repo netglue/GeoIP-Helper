@@ -6,6 +6,9 @@ namespace NetglueGeoIP\Service;
 use NetglueGeoIP\Exception;
 use MaxMind\Db\Reader;
 use Throwable;
+use const FILTER_FLAG_IPV4;
+use const FILTER_FLAG_IPV6;
+use const FILTER_VALIDATE_IP;
 use function filter_var;
 use function end;
 use function count;
@@ -27,15 +30,30 @@ class GeoIPService
 
     public function __construct(
         Reader $reader,
-        array $locales = ['en']
+        ?array $locales = ['en']
     ) {
         $this->reader = $reader;
-        $this->setLocales($locales);
+        if (! empty($locales)) {
+            $this->setLocales($locales);
+        }
+    }
+
+    public function __destruct()
+    {
+        if ($this->reader) {
+            try {
+                $this->reader->close();
+            } catch (Throwable $exception) {
+                // Noop
+            }
+        }
     }
 
     public function get(string $ip) : array
     {
-        if (! filter_var($ip, FILTER_VALIDATE_IP)) {
+        $filterFlags = FILTER_FLAG_IPV6 | FILTER_FLAG_IPV4;
+
+        if (! filter_var($ip, FILTER_VALIDATE_IP, $filterFlags)) {
             throw Exception\InvalidIpAddressException::withIp($ip);
         }
         $ipVersion = $this->reader->metadata()->__get('ipVersion');
