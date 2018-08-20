@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace NetglueGeoIP\ZendMvc\Controller\Plugin;
 
-use NetglueGeoIP\Helper\ClientIPFromSuperGlobals;
 use NetglueGeoIP\Service\GeoIPService;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
@@ -13,19 +12,9 @@ class GeoIP extends AbstractPlugin
     /** @var GeoIPService */
     private $service;
 
-    /** @var ClientIPFromSuperGlobals */
-    private $ipHelper;
-
-    /**
-     * @var string|null
-     */
-    private $ip;
-
-    public function __construct(GeoIPService $service, ?ClientIPFromSuperGlobals $ipHelper = null)
+    public function __construct(GeoIPService $service)
     {
         $this->service = $service;
-        $this->ipHelper = $ipHelper ? $ipHelper : new ClientIPFromSuperGlobals();
-        $this->ip = ($this->ipHelper)();
     }
 
     public function __invoke() : self
@@ -38,38 +27,23 @@ class GeoIP extends AbstractPlugin
         return $this->service;
     }
 
-    public function ip() :? string
+    public function get(string $ip) :? array
     {
-        return $this->ip;
+        return $this->service->get($ip);
     }
 
-    public function get() :? array
+    public function countryCode(string $ip) :? string
     {
-        $data = $this->ip ? $this->service->get($this->ip) : null;
-        return empty($data) ? null : $data;
+        return $this->service->countryCode($ip);
     }
 
-    public function countryCode() :? string
+    public function countryName(string $ip) :? string
     {
-        if ($this->ip) {
-            return $this->service->countryCode($this->ip);
-        }
-        return null;
+        return $this->service->countryName($ip);
     }
 
-    public function countryName() :? string
+    public function timezone(string $ip) :? string
     {
-        if ($this->ip) {
-            return $this->service->countryName($this->ip);
-        }
-        return null;
-    }
-
-    public function timezone() :? string
-    {
-        if ($this->ip) {
-            return $this->service->timezone($this->ip);
-        }
-        return null;
+        return $this->service->timezone($ip);
     }
 }
