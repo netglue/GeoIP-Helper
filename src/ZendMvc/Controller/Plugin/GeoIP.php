@@ -3,13 +3,9 @@ declare(strict_types=1);
 
 namespace NetglueGeoIP\ZendMvc\Controller\Plugin;
 
-use NetglueGeoIP\Exception;
+use NetglueGeoIP\Helper\ClientIPFromSuperGlobals;
 use NetglueGeoIP\Service\GeoIPService;
-use NetglueGeoIP\ZendMvc\IpFromRequest;
-use Zend\Http\Request;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
-use Zend\Mvc\InjectApplicationEventInterface;
-use Zend\Mvc\MvcEvent;
 
 class GeoIP extends AbstractPlugin
 {
@@ -17,14 +13,19 @@ class GeoIP extends AbstractPlugin
     /** @var GeoIPService */
     private $service;
 
+    /** @var ClientIPFromSuperGlobals */
+    private $ipHelper;
+
     /**
      * @var string|null
      */
     private $ip;
 
-    public function __construct(GeoIPService $service)
+    public function __construct(GeoIPService $service, ?ClientIPFromSuperGlobals $ipHelper = null)
     {
         $this->service = $service;
+        $this->ipHelper = $ipHelper ? $ipHelper : new ClientIPFromSuperGlobals();
+        $this->ip = ($this->ipHelper)();
     }
 
     public function __invoke() : self
@@ -39,65 +40,35 @@ class GeoIP extends AbstractPlugin
 
     public function ip() :? string
     {
-        if (! $this->ip) {
-            $request = $this->getRequest();
-            if ($request) {
-                $this->ip = (new IpFromRequest)($request);
-            }
-        }
         return $this->ip;
-    }
-
-    private function getRequest() :? Request
-    {
-        $controller = $this->getController();
-        if (! $controller instanceof InjectApplicationEventInterface) {
-            throw new Exception\RuntimeException(\sprintf(
-                'This controller does not implement %s so I cannot access the request instance',
-                InjectApplicationEventInterface::class
-            ));
-        }
-        $event = $controller->getEvent();
-        $request = null;
-        if ($event instanceof MvcEvent) {
-            $request = $event->getRequest();
-        }
-        if ($request instanceof Request) {
-            return $request;
-        }
-        return null;
     }
 
     public function get() :? array
     {
-        $ip = $this->ip();
-        $data = $ip ? $this->service->get($ip) : null;
+        $data = $this->ip ? $this->service->get($this->ip) : null;
         return empty($data) ? null : $data;
     }
 
     public function countryCode() :? string
     {
-        $ip = $this->ip();
-        if ($ip) {
-            return $this->service->countryCode($ip);
+        if ($this->ip) {
+            return $this->service->countryCode($this->ip);
         }
         return null;
     }
 
     public function countryName() :? string
     {
-        $ip = $this->ip();
-        if ($ip) {
-            return $this->service->countryName($ip);
+        if ($this->ip) {
+            return $this->service->countryName($this->ip);
         }
         return null;
     }
 
     public function timezone() :? string
     {
-        $ip = $this->ip();
-        if ($ip) {
-            return $this->service->timezone($ip);
+        if ($this->ip) {
+            return $this->service->timezone($this->ip);
         }
         return null;
     }

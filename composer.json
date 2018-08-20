@@ -24,6 +24,9 @@
         "php-coveralls/php-coveralls": "^2",
         "zendframework/zend-mvc": "^3.1"
     },
+    "suggest" : {
+        "zendframework/zend-mvc": "Install Zend-MVC in order to use this with a ZF3 app"
+    },
     "config" : {
         "minimum-stability" : "stable",
         "prefer-stable" : true
