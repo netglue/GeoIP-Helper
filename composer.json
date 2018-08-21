@@ -76,7 +76,7 @@
                 "name": "maxmind/geoip-test-data",
                 "version" : "master",
                 "source": {
-                    "url": "git@github.com:maxmind/MaxMind-DB.git",
+                    "url": "https://github.com/maxmind/MaxMind-DB.git",
                     "type": "git",
                     "reference": "master"
                 }
