@@ -41,7 +41,7 @@ class Geolocation implements MiddlewareInterface
     private function injectGeolocationData(ServerRequestInterface $request, string $ip) : ServerRequestInterface
     {
         $data = $this->service->get($ip);
-        if (! $data) {
+        if (empty($data)) {
             return $request;
         }
         $request = $request->withAttribute(self::DATA, $data);
