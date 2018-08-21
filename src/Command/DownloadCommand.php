@@ -42,7 +42,7 @@ class DownloadCommand extends ConsoleCommand
 
     protected function configure()
     {
-        $this->setName('download');
+        $this->setName('geoip:download');
         $this->setDescription('Download a local copy of the GeoIP2 databases');
 
         $this->addOption(

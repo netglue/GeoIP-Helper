@@ -30,10 +30,10 @@ for you: [https://github.com/maxmind/geoipupdate](https://github.com/maxmind/geo
 ### Using the shipped downloader tool
 
 After installing with composer, the command will be made available in `vendor/bin/geoip`. You can get help for the 
-command with `geoip help download`.
+command with `geoip help geoip:download`.
 
 With no arguments, the command will download both the city and country databases into the `./data` directory of this lib.
-To download to a different directory, you should provide a directory argument, i.e `geoip download ~/geoip-data/here`.
+To download to a different directory, you should provide a directory argument, i.e `geoip geoip:download ~/geoip-data/here`.
 
 Files will be named whatever they are on the remote server, something like `GeoLite2-City.mmdb`.
 
