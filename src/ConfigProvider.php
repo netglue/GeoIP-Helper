@@ -55,6 +55,7 @@ class ConfigProvider
         return [
             'factories' => [
                 Command\DownloadCommand::class => Container\Command\DownloadCommandFactory::class,
+                Command\LookupCommand::class => Container\Command\LookupCommandFactory::class,
                 Reader::class => Container\DatabaseReaderFactory::class,
                 Middleware\Geolocation::class => Container\Middleware\GeolocationFactory::class,
                 Service\GeoIPService::class => Container\Service\GeoIPServiceFactory::class,
@@ -79,6 +80,7 @@ class ConfigProvider
         return [
             'commands' => [
                 Command\DownloadCommand::class,
+                Command\LookupCommand::class,
             ]
         ];
     }
