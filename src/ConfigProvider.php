@@ -26,8 +26,11 @@ class ConfigProvider
             // The reason you have to specify the path for the file is that we don't assume you are using the
             // download utility to get a copy of the database, therefore, it could be in a system-wide location
             //
-            'databaseFile' => '/usr/local/var/GeoIP/GeoLite2-Country.mmdb',
-            //'databaseFile' => '/usr/local/var/GeoIP/GeoLite2-City.mmdb',
+            'databaseFile' => __DIR__ . '/../data/GeoLite2-Country.mmdb',
+            //'databaseFile' =>  __DIR__ . '/../data/GeoLite2-City.mmdb',
+
+            // Download directory default location when unspecified on the command line
+            'databaseDirectory' => __DIR__ . '/../data',
 
             //
             // Locales in order of preference. These must correspond to those used by GeoIP

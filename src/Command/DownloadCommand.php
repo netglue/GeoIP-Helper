@@ -84,7 +84,10 @@ class DownloadCommand extends ConsoleCommand
     {
         $this->io = new SymfonyStyle($input, $output);
         $directory = $input->getArgument('directory');
-        $directory = empty($directory) ? '.' : $directory;
+        $defaultDirectory = isset($this->config['databaseDirectory'])
+            ? $this->config['databaseDirectory']
+            : '.';
+        $directory = empty($directory) ? $defaultDirectory : $directory;
         if (! $this->setOutputDirectory($directory)) {
             return 1;
         }
