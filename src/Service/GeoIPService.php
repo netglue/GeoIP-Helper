@@ -40,7 +40,7 @@ class GeoIPService
 
     public function __destruct()
     {
-        if ($this->reader) {
+        if ($this->reader instanceof Reader) {
             try {
                 $this->reader->close();
             } catch (Throwable $exception) {
@@ -69,7 +69,8 @@ class GeoIPService
             $data = $this->reader->get($ip);
             $this->cache[$ip] = $data ? $data : [];
         } catch (Throwable $exception) {
-            throw new Exception\RuntimeException('Cannot retrieve data for the given IP', 500, $exception);
+            $message = sprintf('Cannot retrieve data for the given IP: %s', $exception->getMessage());
+            throw new Exception\RuntimeException($message, 500, $exception);
         }
 
         return $this->cache[$ip];
