@@ -59,5 +59,4 @@ class Geolocation implements MiddlewareInterface
         }
         return $request;
     }
-
 }
