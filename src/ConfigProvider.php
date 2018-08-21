@@ -13,6 +13,7 @@ class ConfigProvider
             'geoip'              => $this->getGeoIPConfig(),
             'dependencies'       => $this->getDependencies(),
             'controller_plugins' => $this->getZendMvcControllerPluginConfig(),
+            'console'            => $this->getConsoleSetup(),
         ];
     }
 
@@ -53,6 +54,7 @@ class ConfigProvider
     {
         return [
             'factories' => [
+                Command\DownloadCommand::class => Container\Command\DownloadCommandFactory::class,
                 Reader::class => Container\DatabaseReaderFactory::class,
                 Middleware\Geolocation::class => Container\Middleware\GeolocationFactory::class,
                 Service\GeoIPService::class => Container\Service\GeoIPServiceFactory::class,
@@ -69,6 +71,15 @@ class ConfigProvider
             'aliases' => [
                 'geoIp' => ZendMvc\Controller\Plugin\GeoIP::class,
             ],
+        ];
+    }
+
+    public function getConsoleSetup() : array
+    {
+        return [
+            'commands' => [
+                Command\DownloadCommand::class,
+            ]
         ];
     }
 }

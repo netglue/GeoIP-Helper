@@ -2,7 +2,7 @@ sudo: false
 
 env:
   global:
-  - CC_TEST_REPORTER_ID=UNKNOWN
+  - CC_TEST_REPORTER_ID=95ee07c1adee34e888512de464dc031d94353db56566098f25e0f50783565e8d
 
 language: php
 
