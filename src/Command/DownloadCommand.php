@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace NetglueGeoIP\Command;
 
 use NetglueGeoIP\ConfigProvider;
+use PharData;
+use PharFileInfo;
+use RecursiveIteratorIterator;
 use Symfony\Component\Console\Command\Command as ConsoleCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -178,14 +181,40 @@ class DownloadCommand extends ConsoleCommand
 
     private function downloadAndExtract(string $url, string $targetFile) : bool
     {
-
         $response = $this->download($url);
         if (! $response) {
             return false;
         }
-        $bytes = \file_put_contents($targetFile, \gzdecode($response->getBody()));
+        $tmpFile = \tempnam(\sys_get_temp_dir(), 'geoip_') . '.tar.gz';
+        if ($tmpFile === false) {
+            $this->io->error('Cannot create temp file for decompression of downloaded files');
+        }
+        $bytes = \file_put_contents($tmpFile, $response->getBody());
         if ($bytes === false) {
-            $this->io->error('Failed to deflate or write the database file');
+            $this->io->error('Failed to write the database archive');
+            return false;
+        }
+
+        $archive = new PharData($tmpFile);
+        $iterator = new RecursiveIteratorIterator($archive, RecursiveIteratorIterator::LEAVES_ONLY);
+        $database = null;
+        foreach ($iterator as $filename => $fileObject) {
+            if (preg_match('/\.mmdb$/', $filename)) {
+                $database = $fileObject;
+                break;
+            }
+        }
+        if (null === $database) {
+            $this->io->error('The archive did not contain any files with an .mmdb extension');
+            return false;
+        }
+        if (! $database instanceof PharFileInfo) {
+            $this->io->error('Unexpected archive item');
+            return false;
+        }
+        $bytes = \file_put_contents($targetFile, $database->getContent());
+        if ($bytes === false) {
+            $this->io->error('Failed to extract/write the database file');
             return false;
         }
         return true;
